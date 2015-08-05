@@ -60,10 +60,9 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
 
         double zo = PrayTime.getBaseTimeZone();
         Log.d("double time", "" + zo);
-        Intent values = new Intent(this, AlarmScreenActivity.class);
+      /*  Intent values = new Intent(this, AlarmScreenActivity.class);
         values.putExtra("alarmTheme", "hi");
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                12345, values, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         Calendar alarm = Calendar.getInstance();
@@ -75,18 +74,18 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
         Log.d("alarm",alarm.get(Calendar.DAY_OF_MONTH) + " ");
 
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() +
-                1000 * 20, pendingIntent);
+                1000 * 20, pendingIntent);*/
 
       //  namazTimesList = PrayTime.calculatePrayTimes(current, latitude, longitude, zo, PrayTime.CalcMethod.SHAFII);
 
-     /*   dataBase.dropTable();
+       dataBase.dropTable();
         namazTimesList = new ArrayList<String>();
-        namazTimesList.add("13:15");
-        namazTimesList.add("13:16");
-        namazTimesList.add("13:17");
-        namazTimesList.add("13:18");
-        namazTimesList.add("13:19");
-        namazTimesList.add("13:20");
+        namazTimesList.add("16:19");
+        namazTimesList.add("16:20");
+        namazTimesList.add("16:21");
+        namazTimesList.add("16:22");
+        namazTimesList.add("16:23");
+        namazTimesList.add("16:24");
 
 
       //  namazTime = new NamazTime(listItems.get(pos).toString(), hour, min);
@@ -101,8 +100,7 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
             namazTime = new NamazTime(listItems.get(pos).toString(), hour, min);
             dataBase.addAlarm(namazTime);
         }
-        AlarmNamazManager.setAlarms(getApplicationContext());*/
-
+        AlarmNamazManager.setAlarms(this);
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {

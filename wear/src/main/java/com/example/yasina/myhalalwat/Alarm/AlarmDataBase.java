@@ -51,7 +51,7 @@ public class AlarmDataBase extends SQLiteOpenHelper {
 
     public void dropTable(){
         SQLiteDatabase db = this.getReadableDatabase();
-        //db.execSQL("DROP TABLE " + Alarm.TABLE_NAME);
+        db.execSQL("DROP TABLE " + Alarm.TABLE_NAME);
         db.execSQL(SQL_CREATE_DB);
     }
 

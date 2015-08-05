@@ -23,13 +23,14 @@ public class AlarmScreenActivity extends Activity {
         namazName = (TextView) findViewById(R.id.namazName_alarmScreen);
         timeNamaz = (TextView) findViewById(R.id.time_alarmScreen);
 
-       /* name = getIntent().getStringExtra(Alarm.COLUMN_NAME_ALARM_NAME);
+        name = getIntent().getStringExtra(Alarm.COLUMN_NAME_ALARM_NAME);
         hour = getIntent().getIntExtra(Alarm.COLUMN_NAME_ALARM_TIME_HOUR, 0);
-        min = getIntent().getIntExtra(Alarm.COLUMN_NAME_ALARM_TIME_MINUTE, 0);*/
+        min = getIntent().getIntExtra(Alarm.COLUMN_NAME_ALARM_TIME_MINUTE, 0);
 
-        name = "fdf";
+      /*  name = "fdf";
         hour = 3;
-        min = 1;
+        min = 1;*/
+
         timeNamaz.setText(hour + ":" + min);
         namazName.setText(name);
     }

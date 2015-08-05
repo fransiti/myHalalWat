@@ -14,7 +14,7 @@ package com.example.yasina.myhalalwat;
         import java.util.Calendar;
         import java.util.List;
 
-public class SimpleListActivity extends Activity implements WearableListView.ClickListener{
+public class OneDayNamazActivity extends Activity implements WearableListView.ClickListener{
 
     private WearableListView mListView;
     private double longitude;
@@ -51,9 +51,9 @@ public class SimpleListActivity extends Activity implements WearableListView.Cli
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
                 mListView = (WearableListView) stub.findViewById(R.id.listView1);
-              //  mListView.setAdapter(new ShowPrayTimeAdapter(SimpleListActivity.this, longitude, latitude));
-                mListView.setAdapter(new MyAdapter(SimpleListActivity.this));
-                mListView.setClickListener(SimpleListActivity.this);
+              //  mListView.setAdapter(new ShowPrayTimeAdapter(OneDayNamazActivity.this, longitude, latitude));
+                mListView.setAdapter(new MyAdapter(OneDayNamazActivity.this));
+                mListView.setClickListener(OneDayNamazActivity.this);
             }
         });
     }

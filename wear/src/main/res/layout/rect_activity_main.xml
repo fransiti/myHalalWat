@@ -10,18 +10,18 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Simple"
+        android:text="Prays today"
         android:id="@+id/btnSimple"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:onClick="btnSimpleClick"/>
 
-    <Button
+   <!-- <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Advanced"
         android:id="@+id/btnAdvanced"
         android:layout_below="@+id/btnSimple"
         android:layout_centerHorizontal="true"
-        android:onClick="btnAdvancedClick"/>
+        android:onClick="btnAdvancedClick"/> -->
 </LinearLayout>

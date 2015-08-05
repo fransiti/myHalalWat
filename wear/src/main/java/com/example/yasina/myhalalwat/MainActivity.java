@@ -14,7 +14,6 @@ package com.example.yasina.myhalalwat;
         import android.view.View;
         import android.widget.TextView;
 
-        import java.util.ArrayList;
         import java.util.Calendar;
         import java.util.List;
         import java.util.TimeZone;
@@ -82,7 +81,7 @@ public class MainActivity extends Activity implements LocationListener{
     }
 
     public void btnSimpleClick(View view){
-        Intent intent = new Intent(this, SimpleListActivity.class);
+        Intent intent = new Intent(this, OneDayNamazActivity.class);
         intent.putExtra("la",latitude);
         intent.putExtra("lo", longitude);
         startActivity(intent);

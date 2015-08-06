@@ -32,16 +32,6 @@ public class AlarmNamazManager extends BroadcastReceiver {
     }
     public static List<String> namazTimesList;
 
-    /*private static ArrayList<String> nextNamazDay;
-    static {
-        nextNamazDay = new ArrayList<String>();
-        nextNamazDay.add("20:30");
-        nextNamazDay.add("20:31");
-        nextNamazDay.add("20:32");
-        nextNamazDay.add("20:33");
-        nextNamazDay.add("20:34");
-        nextNamazDay.add("20:35");
-    }*/
 
     public static void setAlarms(Context context) {
         cancelAlarms(context);
@@ -49,19 +39,20 @@ public class AlarmNamazManager extends BroadcastReceiver {
         AlarmDataBase dbHelper = new AlarmDataBase(context);
         List<NamazTime> alarms = dbHelper.getAlarms();
 
-        Calendar nextDay = Calendar.getInstance();
+       /* Calendar nextDay = Calendar.getInstance();
         nextDay.add(Calendar.DAY_OF_MONTH,1);
         boolean enable = false;
 
         double zo = PrayTime.getBaseTimeZone();
 
         namazTimesList = PrayTime.calculatePrayTimes(nextDay, OneDayNamazActivity.latitude,
-                OneDayNamazActivity.longitude, zo, PrayTime.CalcMethod.SHAFII);
+                OneDayNamazActivity.longitude, zo, PrayTime.CalcMethod.SHAFII);*/
 
-        for (int i=0; i< alarms.size();i++) {
+        for (int i = 0; i < alarms.size(); i++) {
             NamazTime alarm = alarms.get(i);
+
             if (alarm.isEnabled) {
-                enable = true;
+
             Log.d("ala", alarm.getNamazName() + " " + alarm.getHours() + ":" + alarm.getMin());
             PendingIntent pIntent = createPendingIntent(context, alarm);
 
@@ -79,27 +70,6 @@ public class AlarmNamazManager extends BroadcastReceiver {
             } else {
                 Log.d("ala", "mistake" + " " + alarm.getHours() + ":" + alarm.getMin());
             }
-
-                //final int lastHour = calendar.get(Calendar.HOUR);
-                //final int lastMinute = calendar.get(Calendar.MINUTE);
-                String textOfNamazTime = namazTimesList.get(i);
-                StringTokenizer tokenizer = new StringTokenizer(textOfNamazTime,":");
-
-                while (tokenizer.hasMoreElements()) {
-                    alarm.setHours(Integer.parseInt(tokenizer.nextToken()));
-                    alarm.setMin(Integer.parseInt(tokenizer.nextToken()));
-
-                }
-
-                Calendar newTime = Calendar.getInstance();
-                newTime.set(Calendar.HOUR_OF_DAY, alarm.getHours());
-                newTime.set(Calendar.MINUTE, alarm.getMin());
-
-
-                dbHelper.updateAlarm(alarm);
-               /* if(alarm.isEnabled() && (calendar.getTimeInMillis()<newTime.getTimeInMillis())) {
-                    setAlarms(context);
-                }*/
 
         }
 

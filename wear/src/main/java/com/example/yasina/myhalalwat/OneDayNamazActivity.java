@@ -1,19 +1,12 @@
 package com.example.yasina.myhalalwat;
 
         import android.app.Activity;
-        import android.app.AlarmManager;
-        import android.app.Notification;
-        import android.app.PendingIntent;
         import android.content.Context;
-        import android.content.DialogInterface;
-        import android.content.Intent;
         import android.location.Criteria;
         import android.location.Location;
         import android.location.LocationListener;
         import android.location.LocationManager;
         import android.os.Bundle;
-        import android.os.SystemClock;
-        import android.support.v4.app.NotificationManagerCompat;
         import android.support.wearable.view.WatchViewStub;
         import android.support.wearable.view.WearableListView;
         import android.util.Log;
@@ -26,31 +19,33 @@ package com.example.yasina.myhalalwat;
 
         import com.example.yasina.myhalalwat.Alarm.AlarmDataBase;
         import com.example.yasina.myhalalwat.Alarm.AlarmNamazManager;
-        import com.example.yasina.myhalalwat.Alarm.AlarmScreenActivity;
+        import com.example.yasina.myhalalwat.Alarm.NewDayTimerTask;
         import com.example.yasina.myhalalwat.Model.NamazTime;
 
         import java.util.ArrayList;
         import java.util.Calendar;
+        import java.util.Date;
         import java.util.List;
         import java.util.StringTokenizer;
-        import java.util.TimeZone;
+        import java.util.Timer;
 
 public class OneDayNamazActivity extends Activity implements WearableListView.ClickListener,LocationListener {
 
     private WearableListView mListView;
     public static double longitude,latitude;
 
-    private List<String> namazTimesList, nextNamazDay;
+    private List<String> namazTimesList;
 
     private NamazTime namazTime;
     private int pos, hour, min;
     private AlarmDataBase dataBase;
-    private String textOfNamazTime;
+    private String textOfNamazTime, provider;
 
+    private Timer mTimer;
+    private NewDayTimerTask task;
 
-    LocationManager lm;
-    String provider;
-    Location l;
+    public static LocationManager locationManager;
+    public static Location location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,19 +55,32 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
 
         dataBase = new AlarmDataBase(this);
 
-        lm=(LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-        Criteria c=new Criteria();
-        provider=lm.getBestProvider(c, false);
-
-        l=lm.getLastKnownLocation(provider);
-        if(l!=null)
-        {
-            longitude =l.getLongitude();
-            latitude =l.getLatitude();
-        }
-
+        //
         Calendar current = Calendar.getInstance();
         namazTimesList = PrayTime.calculatePrayTimes(current, latitude, longitude, PrayTime.getBaseTimeZone(), PrayTime.CalcMethod.SHAFII);
+
+        mTimer = new Timer();
+        task = new NewDayTimerTask(this);
+
+        Date newDay = new java.util.Date();
+           newDay.setHours(0);
+           newDay.setMinutes(0);
+
+        mTimer.schedule(task,newDay,1000*60*60*24);
+
+        //
+
+        locationManager =(LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+        Criteria c=new Criteria();
+        provider= locationManager.getBestProvider(c, false);
+
+        location = locationManager.getLastKnownLocation(provider);
+        if(location !=null)
+        {
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
+        }
+
 
 //       dataBase.dropTable();
 
@@ -120,8 +128,8 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
     @Override
     public void onLocationChanged(Location location) {
 
-        double lng=l.getLongitude();
-        double lat=l.getLatitude();
+        double lng= this.location.getLongitude();
+        double lat= this.location.getLatitude();
     }
 
     @Override
@@ -161,8 +169,6 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
 
             pos = position;
             textOfNamazTime = namazTimesList.get(position);
-           // namazTime = new NamazTime(listItems.get(pos).toString(), hour, min, false);
-            //Toast.makeText(getApplicationContext(), "not checked", Toast.LENGTH_LONG).show();
 
             StringTokenizer tokenizer = new StringTokenizer(textOfNamazTime,":");
             while (tokenizer.hasMoreElements()) {
@@ -174,10 +180,8 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
                 public void onClick(View v) {
                     if(checkBox.isChecked()) {
                         namazTime = new NamazTime(listItems.get(pos).toString(), hour, min, true);
-                        Toast.makeText(getApplicationContext(), "isChecked", Toast.LENGTH_LONG).show();
                     }else{
                         namazTime = new NamazTime(listItems.get(pos).toString(), hour, min, false);
-                        Toast.makeText(getApplicationContext(), "not checked", Toast.LENGTH_LONG).show();
                     }
                     dataBase.updateAlarm(namazTime);
                 }

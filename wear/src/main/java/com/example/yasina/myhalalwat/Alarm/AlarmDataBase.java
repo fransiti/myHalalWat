@@ -17,18 +17,17 @@ import java.util.List;
  */
 public class AlarmDataBase extends SQLiteOpenHelper {
 
-   public static final String TABLE_NAME = "namazAlarms";
-
-
+  // public static final String TABLE_NAME = "namazlar";
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "namaz.db";
 
-    private static final String SQL_CREATE_DB = "CREATE TABLE namazAlarms"
+    private static final String SQL_CREATE_DB = "CREATE TABLE namazlar"
              + " (" + Alarm._ID
             + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + Alarm.COLUMN_NAME_ALARM_NAME + " TEXT,"
             + Alarm.COLUMN_NAME_ALARM_TIME_HOUR + " INTEGER,"
-            + Alarm.COLUMN_NAME_ALARM_TIME_MINUTE + " INTEGER"
+            + Alarm.COLUMN_NAME_ALARM_TIME_MINUTE + " INTEGER,"
+            + Alarm.COLUMN_NAME_ALARM_ENABLED + " BOOLEAN"
             + " )";
 
     private static final String SQL_DELETE_ALARM = "DROP TABLE IF EXISTS "
@@ -41,6 +40,12 @@ public class AlarmDataBase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_DB);
+        db.insert(Alarm.TABLE_NAME, null, createContentValue(new NamazTime("Fajr", 0, 0, false)));
+        db.insert(Alarm.TABLE_NAME, null, createContentValue(new NamazTime("Sunrise", 0, 0, false)));
+        db.insert(Alarm.TABLE_NAME, null, createContentValue(new NamazTime("Dhuhr", 0, 0, false)));
+        db.insert(Alarm.TABLE_NAME, null, createContentValue(new NamazTime("Asr", 0, 0, false)));
+        db.insert(Alarm.TABLE_NAME, null, createContentValue(new NamazTime("Magrib", 0, 0, false)));
+        db.insert(Alarm.TABLE_NAME, null, createContentValue(new NamazTime("Isha", 0, 0, false)));
     }
 
     @Override
@@ -51,8 +56,8 @@ public class AlarmDataBase extends SQLiteOpenHelper {
 
     public void dropTable(){
         SQLiteDatabase db = this.getReadableDatabase();
-        db.execSQL("DROP TABLE " + Alarm.TABLE_NAME);
-        db.execSQL(SQL_CREATE_DB);
+     //   db.execSQL("DROP TABLE " + Alarm.TABLE_NAME);
+       // db.execSQL(SQL_CREATE_DB);
     }
 
     private NamazTime cursorToNamazTime(Cursor c) {
@@ -61,6 +66,7 @@ public class AlarmDataBase extends SQLiteOpenHelper {
         namaz.setNamazName(c.getString(c.getColumnIndex(Alarm.COLUMN_NAME_ALARM_NAME)));
         namaz.setHours(c.getInt(c.getColumnIndex(Alarm.COLUMN_NAME_ALARM_TIME_HOUR)));
         namaz.setMin(c.getInt(c.getColumnIndex(Alarm.COLUMN_NAME_ALARM_TIME_MINUTE)));
+        namaz.setIsEnabled(c.getInt(c.getColumnIndex(Alarm.COLUMN_NAME_ALARM_ENABLED)) == 0 ? false : true);
         return namaz;
     }
 
@@ -69,6 +75,7 @@ public class AlarmDataBase extends SQLiteOpenHelper {
         values.put(Alarm.COLUMN_NAME_ALARM_NAME, namazTime.getNamazName());
         values.put(Alarm.COLUMN_NAME_ALARM_TIME_HOUR, namazTime.getHours());
         values.put(Alarm.COLUMN_NAME_ALARM_TIME_MINUTE, namazTime.getMin());
+        values.put(Alarm.COLUMN_NAME_ALARM_ENABLED, namazTime.isEnabled);
         return values;
     }
 
@@ -77,11 +84,11 @@ public class AlarmDataBase extends SQLiteOpenHelper {
         return getWritableDatabase().insert(Alarm.TABLE_NAME, null, values);
     }
 
-    public NamazTime getAlarm(long id) {
+    public NamazTime getAlarm(String name) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String select = "SELECT * FROM " + Alarm.TABLE_NAME + " WHERE "
-                + Alarm._ID + " = " + id;
+                + Alarm.COLUMN_NAME_ALARM_NAME + " ='" + name + "'";
 
         Cursor c = db.rawQuery(select, null);
 
@@ -95,7 +102,7 @@ public class AlarmDataBase extends SQLiteOpenHelper {
     public long updateAlarm(NamazTime namaz) {
         ContentValues values = createContentValue(namaz);
         return getWritableDatabase().update(Alarm.TABLE_NAME, values,
-                Alarm._ID + " = ?", new String[] { String.valueOf(namaz.getId()) });
+                Alarm.COLUMN_NAME_ALARM_NAME + " =?" , new String[] { String.valueOf(namaz.getNamazName()) });
     }
 
     public int deleteAlarm(long id) {

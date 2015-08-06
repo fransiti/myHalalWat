@@ -10,10 +10,16 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.yasina.myhalalwat.Model.NamazTime;
+import com.example.yasina.myhalalwat.OneDayNamazActivity;
+import com.example.yasina.myhalalwat.PrayTime;
 import com.example.yasina.myhalalwat.R;
 import com.example.yasina.myhalalwat.Alarm.NamazAlarmContract.Alarm;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Created by yasina on 05.08.15.
@@ -24,55 +30,80 @@ public class AlarmNamazManager extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         setAlarms(context);
     }
+    public static List<String> namazTimesList;
+
+    /*private static ArrayList<String> nextNamazDay;
+    static {
+        nextNamazDay = new ArrayList<String>();
+        nextNamazDay.add("20:30");
+        nextNamazDay.add("20:31");
+        nextNamazDay.add("20:32");
+        nextNamazDay.add("20:33");
+        nextNamazDay.add("20:34");
+        nextNamazDay.add("20:35");
+    }*/
 
     public static void setAlarms(Context context) {
         cancelAlarms(context);
 
         AlarmDataBase dbHelper = new AlarmDataBase(context);
         List<NamazTime> alarms = dbHelper.getAlarms();
-        for (NamazTime alarm : alarms) {
-Log.d("ala",alarm.getNamazName() + " " + alarm.getHours() + ":" + alarm.getMin());
-                PendingIntent pIntent = createPendingIntent(context, alarm);
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.HOUR_OF_DAY, alarm.getHours());
-                calendar.set(Calendar.MINUTE, alarm.getMin());
-                calendar.set(Calendar.SECOND, 00);
+        Calendar nextDay = Calendar.getInstance();
+        nextDay.add(Calendar.DAY_OF_MONTH,1);
+        boolean enable = false;
 
-            //Find next time to set
-            final int nowDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-            final int nowHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-            final int nowMinute = Calendar.getInstance().get(Calendar.MINUTE);
-            boolean alarmSet = false;
-            int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        double zo = PrayTime.getBaseTimeZone();
 
-            //First check if it's later in the week
-				/*for (int dayOfWeek = Calendar.SUNDAY; dayOfWeek <= Calendar.SATURDAY; ++dayOfWeek) {*/
+        namazTimesList = PrayTime.calculatePrayTimes(nextDay, OneDayNamazActivity.latitude,
+                OneDayNamazActivity.longitude, zo, PrayTime.CalcMethod.SHAFII);
+
+        for (int i=0; i< alarms.size();i++) {
+            NamazTime alarm = alarms.get(i);
+            if (alarm.isEnabled) {
+                enable = true;
+            Log.d("ala", alarm.getNamazName() + " " + alarm.getHours() + ":" + alarm.getMin());
+            PendingIntent pIntent = createPendingIntent(context, alarm);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, alarm.getHours());
+            calendar.set(Calendar.MINUTE, alarm.getMin());
+            calendar.set(Calendar.SECOND, 00);
+
             Calendar cur = Calendar.getInstance();
-            Log.d("ala","cur time " + cur.get(Calendar.HOUR)+ ":" + cur.get(Calendar.MINUTE) + " "
-                    + cur.get(Calendar.DAY_OF_WEEK) + " " + cur.get(Calendar.MONTH) + " " +cur.get(Calendar.AM_PM));
-            Log.d("ala", "cur time " + cur.getTimeInMillis());
-            Log.d("ala","calendar time " + calendar.get(Calendar.HOUR)+ ":" + calendar.get(Calendar.MINUTE) + " "
-                    + calendar.get(Calendar.DAY_OF_WEEK) + " " + calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.AM_PM));
-            Log.d("ala", "calendar time " + calendar.getTimeInMillis());
-            if (cur.getTimeInMillis() < calendar.getTimeInMillis()) {
-                calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek);
 
+            if (cur.getTimeInMillis() < calendar.getTimeInMillis()) {
                 setAlarm(context, calendar, pIntent);
-                Log.d("ala","set alarm " + alarm.getHours() + ":" + alarm.getMin());
-                alarmSet = true;
+                Log.d("ala", "set alarm " + alarm.getHours() + ":" + alarm.getMin());
                 break;
-            }else{
-                Log.d("ala","mistake" + " " + alarm.getHours() + ":" + alarm.getMin());
+            } else {
+                Log.d("ala", "mistake" + " " + alarm.getHours() + ":" + alarm.getMin());
             }
-            //First check if it's later in the week
-          /*  Calendar curr = Calendar.getInstance();
-                if (curr.getTimeInMillis() < calendar.getTimeInMillis()) {
-                    setAlarm(context, calendar, pIntent);
-                    alarmSet = true;
-                    break;
+
+                //final int lastHour = calendar.get(Calendar.HOUR);
+                //final int lastMinute = calendar.get(Calendar.MINUTE);
+                String textOfNamazTime = namazTimesList.get(i);
+                StringTokenizer tokenizer = new StringTokenizer(textOfNamazTime,":");
+
+                while (tokenizer.hasMoreElements()) {
+                    alarm.setHours(Integer.parseInt(tokenizer.nextToken()));
+                    alarm.setMin(Integer.parseInt(tokenizer.nextToken()));
+
+                }
+
+                Calendar newTime = Calendar.getInstance();
+                newTime.set(Calendar.HOUR_OF_DAY, alarm.getHours());
+                newTime.set(Calendar.MINUTE, alarm.getMin());
+
+
+                dbHelper.updateAlarm(alarm);
+               /* if(alarm.isEnabled() && (calendar.getTimeInMillis()<newTime.getTimeInMillis())) {
+                    setAlarms(context);
                 }*/
+
         }
+
+    }
 
     }
 
@@ -115,9 +146,7 @@ Log.d("ala",alarm.getNamazName() + " " + alarm.getHours() + ":" + alarm.getMin()
         intent.putExtra(Alarm.COLUMN_NAME_ALARM_TIME_HOUR, model.getHours());
         intent.putExtra(Alarm.COLUMN_NAME_ALARM_TIME_MINUTE, model.getMin());
 
-      //  return PendingIntent.getActivity(context,
-        //         (int) model.getId(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        Log.d("ala","creat pending");
+        Log.d("ala","create pending");
         return PendingIntent.getService(context, (int) model.getId(), intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }

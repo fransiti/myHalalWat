@@ -7,14 +7,24 @@ public class NamazTime {
 
     private String namazName;
     private int hours, min, id;
+    public boolean isEnabled;
 
-    public NamazTime(String namazName, int hours, int min) {
+    public NamazTime(String namazName, int hours, int min,boolean isEnabled) {
         this.namazName = namazName;
         this.hours = hours;
         this.min = min;
+        this.isEnabled = isEnabled;
     }
 
     public NamazTime() {
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setIsEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     public int getId() {

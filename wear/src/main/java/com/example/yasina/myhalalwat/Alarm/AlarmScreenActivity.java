@@ -27,10 +27,6 @@ public class AlarmScreenActivity extends Activity {
         hour = getIntent().getIntExtra(Alarm.COLUMN_NAME_ALARM_TIME_HOUR, 0);
         min = getIntent().getIntExtra(Alarm.COLUMN_NAME_ALARM_TIME_MINUTE, 0);
 
-      /*  name = "fdf";
-        hour = 3;
-        min = 1;*/
-
         timeNamaz.setText(hour + ":" + min);
         namazName.setText(name);
     }

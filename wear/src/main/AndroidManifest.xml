@@ -33,6 +33,8 @@
         <service
             android:name=".Alarm.AlarmService"
             android:enabled="true" />
+        <service android:name=".Alarm.newDay.NewDayService"
+            android:enabled="true"/>
 
     </application>
 

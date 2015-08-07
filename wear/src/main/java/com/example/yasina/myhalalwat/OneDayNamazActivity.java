@@ -1,7 +1,10 @@
 package com.example.yasina.myhalalwat;
 
         import android.app.Activity;
+        import android.app.AlarmManager;
+        import android.app.PendingIntent;
         import android.content.Context;
+        import android.content.Intent;
         import android.location.Criteria;
         import android.location.Location;
         import android.location.LocationListener;
@@ -19,7 +22,9 @@ package com.example.yasina.myhalalwat;
 
         import com.example.yasina.myhalalwat.Alarm.AlarmDataBase;
         import com.example.yasina.myhalalwat.Alarm.AlarmNamazManager;
+        import com.example.yasina.myhalalwat.Alarm.AlarmService;
         import com.example.yasina.myhalalwat.Alarm.NewDayTimerTask;
+        import com.example.yasina.myhalalwat.Alarm.newDay.NewDayService;
         import com.example.yasina.myhalalwat.Model.NamazTime;
 
         import java.util.ArrayList;
@@ -47,6 +52,23 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
     public static LocationManager locationManager;
     public static Location location;
 
+    private void setNewDayAlarm(){
+
+        Intent intent = new Intent(this, NewDayService.class);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+
+        Log.d("ala", "create pending");
+        PendingIntent pendingIntent = PendingIntent.getService(this, 1234, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (android.app.AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+        AlarmManager.INTERVAL_DAY, pendingIntent);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,14 +81,14 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
         Calendar current = Calendar.getInstance();
         namazTimesList = PrayTime.calculatePrayTimes(current, latitude, longitude, PrayTime.getBaseTimeZone(), PrayTime.CalcMethod.SHAFII);
 
-        mTimer = new Timer();
+      /*  mTimer = new Timer();
         task = new NewDayTimerTask(this);
 
         Date newDay = new java.util.Date();
            newDay.setHours(0);
            newDay.setMinutes(0);
 
-        mTimer.schedule(task,newDay,1000*60*60*24);
+        mTimer.schedule(task,newDay,1000*60*60*24);*/
 
         //
 

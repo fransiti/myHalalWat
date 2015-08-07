@@ -21,9 +21,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.StringTokenizer;
 
-/**
- * Created by yasina on 05.08.15.
- */
+
 public class AlarmNamazManager extends BroadcastReceiver {
 
     @Override

@@ -3,6 +3,7 @@ package com.example.yasina.myhalalwat.Alarm.newDay;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.example.yasina.myhalalwat.Alarm.AlarmDataBase;
 import com.example.yasina.myhalalwat.Alarm.AlarmNamazManager;
@@ -50,7 +51,7 @@ public class NewDayService extends Service {
 
             dbHelper.updateAlarm(alarm);
         }
-
+        Log.d("ala3", "create pending");
         AlarmNamazManager.setAlarms(this);
 
         return 0;

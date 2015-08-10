@@ -18,21 +18,17 @@ package com.example.yasina.myhalalwat;
         import android.view.ViewGroup;
         import android.widget.CheckBox;
         import android.widget.TextView;
-        import android.widget.Toast;
 
         import com.example.yasina.myhalalwat.Alarm.AlarmDataBase;
         import com.example.yasina.myhalalwat.Alarm.AlarmNamazManager;
-        import com.example.yasina.myhalalwat.Alarm.AlarmService;
-        import com.example.yasina.myhalalwat.Alarm.NewDayTimerTask;
         import com.example.yasina.myhalalwat.Alarm.newDay.NewDayService;
         import com.example.yasina.myhalalwat.Model.NamazTime;
 
         import java.util.ArrayList;
         import java.util.Calendar;
-        import java.util.Date;
         import java.util.List;
         import java.util.StringTokenizer;
-        import java.util.Timer;
+        import com.example.yasina.myhalalwat.R;
 
 public class OneDayNamazActivity extends Activity implements WearableListView.ClickListener,LocationListener {
 
@@ -46,9 +42,6 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
     private AlarmDataBase dataBase;
     private String textOfNamazTime, provider;
 
-    private Timer mTimer;
-    private NewDayTimerTask task;
-
     public static LocationManager locationManager;
     public static Location location;
 
@@ -60,7 +53,7 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
 
-        Log.d("ala", "create pending");
+        Log.d("ala2", "create pending");
         PendingIntent pendingIntent = PendingIntent.getService(this, 1234, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (android.app.AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
@@ -72,25 +65,15 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_listview);
 
-        dataBase = new AlarmDataBase(this);
+
+      dataBase = new AlarmDataBase(this);
 
         //
+        setNewDayAlarm();
         Calendar current = Calendar.getInstance();
         namazTimesList = PrayTime.calculatePrayTimes(current, latitude, longitude, PrayTime.getBaseTimeZone(), PrayTime.CalcMethod.SHAFII);
-
-      /*  mTimer = new Timer();
-        task = new NewDayTimerTask(this);
-
-        Date newDay = new java.util.Date();
-           newDay.setHours(0);
-           newDay.setMinutes(0);
-
-        mTimer.schedule(task,newDay,1000*60*60*24);*/
-
-        //
 
         locationManager =(LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         Criteria c=new Criteria();
@@ -226,4 +209,5 @@ public class OneDayNamazActivity extends Activity implements WearableListView.Cl
     public void btnSetAlarm(View view){
         AlarmNamazManager.setAlarms(getApplicationContext());
     }
+
 }

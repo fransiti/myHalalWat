@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.yasina.myhalalwat.Alarm.NamazAlarmContract.Alarm;
+import com.example.yasina.myhalalwat.Model.Mazhab;
 import com.example.yasina.myhalalwat.Model.NamazTime;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class AlarmDataBase extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "namaz.db";
 
-    private static final String SQL_CREATE_DB = "CREATE TABLE namazlar"
+    private static final String SQL_CREATE_TABLE_NAMAZLAR = "CREATE TABLE namazlar"
              + " (" + Alarm._ID
             + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + Alarm.COLUMN_NAME_ALARM_NAME + " TEXT,"
@@ -29,6 +30,11 @@ public class AlarmDataBase extends SQLiteOpenHelper {
             + Alarm.COLUMN_NAME_ALARM_TIME_MINUTE + " INTEGER,"
             + Alarm.COLUMN_NAME_ALARM_ENABLED + " BOOLEAN"
             + " )";
+
+    private static final String SQL_CREATE_TABLE_MAZHAB = "CREATE TABLE mazhab"
+            + " (mazhab_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + " hanafi BOOLEAN)";
+
 
     private static final String SQL_DELETE_ALARM = "DROP TABLE IF EXISTS "
             + Alarm.TABLE_NAME;
@@ -39,7 +45,13 @@ public class AlarmDataBase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SQL_CREATE_DB);
+        db.execSQL(SQL_CREATE_TABLE_NAMAZLAR);
+        db.execSQL(SQL_CREATE_TABLE_MAZHAB);
+
+        ContentValues values = new ContentValues();
+        values.put("hanafi", true);
+        getWritableDatabase().insert("mazhab", null, values);
+
         db.insert(Alarm.TABLE_NAME, null, createContentValue(new NamazTime("Fajr", 0, 0, false)));
         db.insert(Alarm.TABLE_NAME, null, createContentValue(new NamazTime("Sunrise", 0, 0, false)));
         db.insert(Alarm.TABLE_NAME, null, createContentValue(new NamazTime("Dhuhr", 0, 0, false)));
@@ -56,8 +68,31 @@ public class AlarmDataBase extends SQLiteOpenHelper {
 
     public void dropTable(){
         SQLiteDatabase db = this.getReadableDatabase();
-     //   db.execSQL("DROP TABLE " + Alarm.TABLE_NAME);
-       // db.execSQL(SQL_CREATE_DB);
+        db.execSQL("DROP TABLE " + Alarm.TABLE_NAME);
+    }
+
+    public int updateMazhab(Mazhab mazhab){
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("hanafi", mazhab.isHanafi());
+        int id = mazhab.getId();
+        return getWritableDatabase().update("mazhab", values, "mazhab_id" + " =?" , new String[] { String.valueOf(id) });
+    }
+
+    public Mazhab getMazhab(){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String select = "SELECT * FROM mazhab WHERE mazhab_id=1";
+
+        Cursor c = db.rawQuery(select, null);
+
+        if (c.moveToNext()) {
+            Mazhab mazhab = new Mazhab();
+            mazhab.setHanafi(c.getInt(c.getColumnIndex("hanafi")) == 0 ? false : true);
+            return mazhab;
+        }
+
+        return null;
     }
 
     private NamazTime cursorToNamazTime(Cursor c) {
